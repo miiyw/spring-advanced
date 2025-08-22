@@ -69,7 +69,7 @@ public class TodoService {
 
     // Todo 단건 조회: @EntityGraph를 사용하여 'user' 연관 엔티티 즉시 로딩
     public TodoResponse getTodo(long todoId) {
-        Todo todo = todoRepository.findByIdWithUser(todoId)
+        Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 
         // User 정보를 가져와서 TodoResponse 반환
