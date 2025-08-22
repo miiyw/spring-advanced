@@ -48,11 +48,14 @@ public class TodoService {
         );
     }
 
+    // Todo 목록 조회: @EntityGraph를 사용하여 'user' 연관 엔티티 즉시 로딩
     public Page<TodoResponse> getTodos(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
+        // @EntityGraph가 적용된 findAllByOrderByModifiedAtDesc 메서드 호출
         Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
 
+        // Todo -> TodoResponse로 변환
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
                 todo.getTitle(),
@@ -64,10 +67,12 @@ public class TodoService {
         ));
     }
 
+    // Todo 단건 조회: @EntityGraph를 사용하여 'user' 연관 엔티티 즉시 로딩
     public TodoResponse getTodo(long todoId) {
         Todo todo = todoRepository.findByIdWithUser(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 
+        // User 정보를 가져와서 TodoResponse 반환
         User user = todo.getUser();
 
         return new TodoResponse(
