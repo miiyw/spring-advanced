@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.common.exception.ServerException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,4 +59,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 
+    // 스프링 기본 예외(EmptyResultDataAccessException)를 404로 매핑
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArg(IllegalArgumentException ex,
+                                                                HttpServletRequest req) {
+        var status = HttpStatus.NOT_FOUND;
+        var body = new HashMap<String, Object>();
+        body.put("status", status.name());
+        body.put("code", status.value());
+        body.put("message", ex.getMessage());
+        body.put("path", req.getRequestURI());
+        return ResponseEntity.status(status).body(body);
+    }
 }
