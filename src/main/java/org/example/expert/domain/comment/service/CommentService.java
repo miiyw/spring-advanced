@@ -7,13 +7,14 @@ import org.example.expert.domain.comment.dto.response.CommentSaveResponse;
 import org.example.expert.domain.comment.entity.Comment;
 import org.example.expert.domain.comment.repository.CommentRepository;
 import org.example.expert.domain.common.dto.AuthUser;
-import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,10 @@ public class CommentService {
     @Transactional
     public CommentSaveResponse saveComment(AuthUser authUser, long todoId, CommentSaveRequest commentSaveRequest) {
         User user = User.fromAuthUser(authUser);
+
+        // To.do 없으면 404
         Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-                new InvalidRequestException("Todo not found"));
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "할 일을 찾을 수 없습니다."));
 
         Comment newComment = new Comment(
                 commentSaveRequest.getContents(),
@@ -48,17 +51,22 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getComments(long todoId) {
+        // To.do 없으면 404
+        if (!todoRepository.existsById(todoId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "할 일을 찾을 수 없습니다.");
+        }
+
+        // 존재하면 댓글 조회 (없으면 빈 리스트 반환 → 200 [])
         List<Comment> commentList = commentRepository.findByTodoIdWithUser(todoId);
 
         List<CommentResponse> dtoList = new ArrayList<>();
         for (Comment comment : commentList) {
             User user = comment.getUser();
-            CommentResponse dto = new CommentResponse(
+            dtoList.add(new CommentResponse(
                     comment.getId(),
                     comment.getContents(),
                     new UserResponse(user.getId(), user.getEmail())
-            );
-            dtoList.add(dto);
+            ));
         }
         return dtoList;
     }

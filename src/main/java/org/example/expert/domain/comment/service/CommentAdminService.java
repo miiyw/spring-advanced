@@ -2,8 +2,10 @@ package org.example.expert.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.comment.repository.CommentRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -13,11 +15,11 @@ public class CommentAdminService {
 
     @Transactional
     public void deleteComment(long commentId) {
-        // 존재 검사를 먼저 해서 메서드 내부에서 즉시 예외 발생 → AOP가 [ERROR] 로깅
-        commentRepository.findById(commentId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Comment not found"));
-
-        commentRepository.deleteById(commentId);
+        int rows = commentRepository.deleteByIdReturningCount(commentId);
+        if (rows == 0) {
+            // 존재하지 않으면 404
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        // rows == 1 이면 정상 삭제 → 컨트롤러에서 204 반환
     }
 }

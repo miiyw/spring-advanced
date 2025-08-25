@@ -20,46 +20,55 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String BEARER_PREFIX = "Bearer ";
+    public static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
     @Value("${jwt.secret.key}")
-    private String secretKey;
+    private String secretKey;   // Base64 인코딩된 키여야 함
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
-        key = Keys.hmacShaKeyFor(bytes);
+        this.key = Keys.hmacShaKeyFor(bytes);
     }
 
+    // 반환값에는 Bearer 접두어 포함하지 않음
     public String createToken(Long userId, String email, UserRole userRole) {
-        Date date = new Date();
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + TOKEN_TIME);
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("email", email)
-                        .claim("userRole", userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("email", email)
+                .claim("userRole", userRole.name()) // 문자열로 고정 (USER/ADMIN)
+                .setIssuedAt(now)
+                .setExpiration(exp)                    // 만료 포함
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 
-    public String substringToken(String tokenValue) {
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
+    /** Authorization 헤더에서 Bearer 토큰만 추출 */
+    public String substringToken(String headerValue) {
+        if (StringUtils.hasText(headerValue) && headerValue.startsWith(BEARER_PREFIX)) {
+            return headerValue.substring(BEARER_PREFIX.length());
         }
         throw new ServerException("Not Found Token");
     }
 
+    /** 만료/서명 검증 포함 (만료 시 ExpiredJwtException 발생) */
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
+                // .setAllowedClockSkewSeconds(30) // 필요 시 시계 오차 허용
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(token)             // 서명 + exp 검증 수행
                 .getBody();
+    }
+
+    /** 필요 시 명시 검증용 */
+    public void validate(String token) {
+        extractClaims(token); // 유효하지 않으면 예외 발생
     }
 }
