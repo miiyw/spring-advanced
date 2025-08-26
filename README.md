@@ -331,19 +331,21 @@
 
 - `CommentServiceTest`
 
-<img width="1344" height="1558" alt="Image" src="https://github.com/user-attachments/assets/8d1328d0-b1c1-4e93-a146-67afb1804d5c" /> | <img width="2006" height="1462" alt="Image" src="https://github.com/user-attachments/assets/5a2746fd-8172-4456-98de-9ba04c0835d0" /> | <img width="2056" height="1012" alt="Image" src="https://github.com/user-attachments/assets/bda90821-0bbc-4061-9bbc-e0f44164adf0" />
+<img width="1344" height="1558" alt="Image" src="images/testc1.png" /> | <img width="2006" height="1462" alt="Image" src="images/testc1_c1.png" /> | <img width="2056" height="1012" alt="Image" src="images/testc1_c2.png" />
 ---|---|---|
+
+
   
 - `ManagerServiceTest`
 
-<img width="350" height="350" alt="Image" src="https://github.com/user-attachments/assets/84c678ef-5aed-46b5-97f5-06a80d1dfdfe" />
+<img width="350" height="350" alt="Image" src="images/testc2.png" />
 
-<img width="2034" height="1406" alt="Image" src="https://github.com/user-attachments/assets/46eadcaf-bd96-49a5-8d1c-80e246f4bf65" /> | <img width="2054" height="1190" alt="Image" src="https://github.com/user-attachments/assets/1911a6e5-39ad-44e4-a5fd-5d1d285a6f66" /> | <img width="2024" height="966" alt="Image" src="https://github.com/user-attachments/assets/115e5d61-35a9-490f-8a50-6b75a855cd7c" />
+<img width="2034" height="1406" alt="Image" src="images/testc2_c1.png" /> | <img width="2054" height="1190" alt="Image" src="images/testc2_c2.png" /> | <img width="2024" height="966" alt="Image" src="images/testc2_c3.png" />
 ---|---|---|
 
 - `PasswordEncoderTest` / `AuthServiceTest`
 
-<img width="1286" height="1378" alt="Image" src="https://github.com/user-attachments/assets/63183f62-b329-4ba9-84b8-7b41579c2121" /> | <img width="1592" height="1460" alt="Image" src="https://github.com/user-attachments/assets/ddc40d40-da33-499e-a100-e95c85890b32" /> | <img width="1782" height="1224" alt="Image" src="https://github.com/user-attachments/assets/6992b5cc-413c-4ef4-b8f7-987b62af7b4f" />
+<img width="1286" height="1378" alt="Image" src="images/testc3.png" /> | <img width="1592" height="1460" alt="Image" src="images/testc3_c1.png" /> | <img width="1782" height="1224" alt="Image" src="images/testc3_c2.png" />
 ---|---|---|
 
 
