@@ -15,16 +15,14 @@ class PasswordEncoderTest {
 
     @Test
     void matches_메서드가_정상적으로_동작한다() {
-        // given
+        // given: 원본 비밀번호와 이를 암호화한 값 준비
         String rawPassword = "testPassword";  // 원본 비밀번호
         String encodedPassword = passwordEncoder.encode(rawPassword);  // 암호화된 비밀번호
 
-        // when
-        // 순서를 수정하여 원본 비밀번호와 암호화된 비밀번호를 비교
+        // when: matches() 호출로 원본과 암호화된 비밀번호 비교
         boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
 
-        // then
-        // 두 비밀번호가 일치하면 true를 반환해야 함
+        // then: 원본과 암호화된 비밀번호가 일치하면 true 반환
         assertTrue(matches);
     }
 }
