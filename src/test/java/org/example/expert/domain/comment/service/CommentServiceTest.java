@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,4 +77,52 @@ class CommentServiceTest {
         // then
         assertNotNull(result);
     }
+
+    @Test
+    void getComments_Todo없으면_404() {
+        long todoId = 1L;
+        given(todoRepository.existsById(todoId)).willReturn(false);
+
+        var ex = assertThrows(ResponseStatusException.class,
+                () -> commentService.getComments(todoId));
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertEquals("할 일을 찾을 수 없습니다.", ex.getReason());
+    }
+
+    @Test
+    void getComments_댓글없으면_빈리스트200() {
+        long todoId = 1L;
+        given(todoRepository.existsById(todoId)).willReturn(true);
+        given(commentRepository.findByTodoIdWithUser(todoId)).willReturn(List.of()); // 빈 목록
+
+        var result = commentService.getComments(todoId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty()); // [] 반환 확인
+    }
+
+    @Test
+    void getComments_댓글있으면_목록반환200() {
+        // given
+        long todoId = 1L;
+        given(todoRepository.existsById(todoId)).willReturn(true);
+
+        AuthUser authUser = new AuthUser(1L, "email@ex.com", UserRole.USER);
+        User user = User.fromAuthUser(authUser);
+        Todo todo = new Todo("title", "title", "contents", user);
+        Comment comment = new Comment("hi", user, todo);
+
+        given(commentRepository.findByTodoIdWithUser(todoId)).willReturn(java.util.List.of(comment));
+
+        // when
+        var list = commentService.getComments(todoId);
+
+        // then
+        assertEquals(1, list.size());
+        assertEquals("hi", list.get(0).getContents());
+        assertEquals(1L, list.get(0).getUser().getId());
+        assertEquals("email@ex.com", list.get(0).getUser().getEmail());
+    }
+
 }
